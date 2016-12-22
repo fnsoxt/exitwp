@@ -89,6 +89,7 @@ def parse_wp_xml(file):
     c = root.find('channel')
 
     def parse_header():
+        print c.find('link')
         return {
             'title': unicode(c.find('title').text),
             'link': unicode(c.find('link').text),
@@ -154,8 +155,8 @@ def parse_wp_xml(file):
                 'title': gi('title'),
                 'link': gi('link'),
                 'author': gi('dc:creator'),
-                'date': gi('wp:post_date_gmt'),
-                'slug': gi('wp:post_name'),
+                'date': gi('wp:post_date'),
+                'slug': gi('title'),
                 'status': gi('wp:status'),
                 'type': gi('wp:post_type'),
                 'wp_id': gi('wp:post_id'),
@@ -183,7 +184,7 @@ def write_jekyll(data, target_format):
     item_uids = {}
     attachments = {}
 
-    def get_blog_path(data, path_infix='jekyll'):
+    def get_blog_path(data, path_infix=''):
         name = data['header']['link']
         name = re.sub('^https?', '', name)
         name = re.sub('[^A-Za-z0-9_.-]', '', name)
@@ -295,7 +296,6 @@ def write_jekyll(data, target_format):
             'date': datetime.strptime(
                 i['date'], '%Y-%m-%d %H:%M:%S').replace(tzinfo=UTC()),
             'slug': i['slug'],
-            'wordpress_id': int(i['wp_id']),
             'comments': i['comments'],
         }
         if len(i['excerpt']) > 0:
@@ -305,7 +305,7 @@ def write_jekyll(data, target_format):
 
         if i['type'] == 'post':
             i['uid'] = get_item_uid(i, date_prefix=True)
-            fn = get_item_path(i, dir='_posts')
+            fn = get_item_path(i, dir='')
             out = open_file(fn)
             yaml_header['layout'] = 'post'
         elif i['type'] == 'page':
@@ -354,10 +354,10 @@ def write_jekyll(data, target_format):
                     tax_out[t_name].append(tvalue)
 
             out.write('---\n')
-            if len(yaml_header) > 0:
-                out.write(toyaml(yaml_header))
-            if len(tax_out) > 0:
-                out.write(toyaml(tax_out))
+            # if len(yaml_header) > 0:
+                # out.write(toyaml(yaml_header))
+            # if len(tax_out) > 0:
+                # out.write(toyaml(tax_out))
 
             out.write('---\n\n')
             try:
