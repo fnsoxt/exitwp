@@ -217,6 +217,7 @@ def write_jekyll(data, target_format):
             s_title = item['slug']
             s_title = re.sub('[/]', '', s_title)
             print s_title
+            # print item['taxanomies']['category'][0]
             uid.append(s_title)
             fn = ''.join(uid)
             n = 1
@@ -228,13 +229,10 @@ def write_jekyll(data, target_format):
         return result
 
     def get_item_path(item, dir=''):
-        full_dir = get_full_dir(dir)
+        # full_dir = get_full_dir(dir)
+        full_dir = get_full_dir(item['taxanomies']['category'][0])
         filename_parts = [full_dir, '/']
         filename_parts.append(item['uid'])
-        if item['type'] == 'page':
-            if (not os.path.exists(''.join(filename_parts))):
-                os.makedirs(''.join(filename_parts))
-            filename_parts.append('/index')
         filename_parts.append('.')
         filename_parts.append(target_format)
         return ''.join(filename_parts)
