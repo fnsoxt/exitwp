@@ -89,7 +89,6 @@ def parse_wp_xml(file):
     c = root.find('channel')
 
     def parse_header():
-        print c.find('link')
         return {
             'title': unicode(c.find('title').text),
             'link': unicode(c.find('link').text),
@@ -124,7 +123,7 @@ def parse_wp_xml(file):
                     tag = q
                 try:
                     result = i.find(ns[namespace] + tag).text
-                    print result.encode('utf-8')
+                    # print result.encode('utf-8')
                 except AttributeError:
                     result = 'No Content Found'
                     if empty:
@@ -216,12 +215,8 @@ def write_jekyll(data, target_format):
                 uid.append(dt.strftime('%Y-%m-%d'))
                 uid.append('-')
             s_title = item['slug']
-            if s_title is None or s_title == '':
-                s_title = item['title']
-            if s_title is None or s_title == '':
-                s_title = 'untitled'
-            s_title = s_title.replace(' ', '_')
-            s_title = re.sub('[^a-zA-Z0-9_-]', '', s_title)
+            s_title = re.sub('[/]', '', s_title)
+            print s_title
             uid.append(s_title)
             fn = ''.join(uid)
             n = 1
@@ -353,13 +348,14 @@ def write_jekyll(data, target_format):
                         continue
                     tax_out[t_name].append(tvalue)
 
-            out.write('---\n')
+            out.write(i['title'])
+            out.write('\n')
             # if len(yaml_header) > 0:
                 # out.write(toyaml(yaml_header))
             # if len(tax_out) > 0:
                 # out.write(toyaml(tax_out))
 
-            out.write('---\n\n')
+            out.write('====\n\n')
             try:
                 out.write(html2fmt(i['body'], target_format))
             except:
